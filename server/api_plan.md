@@ -5,10 +5,7 @@
     - jwt
 - login
 - logout
-- delete user
-- update user data
-    - password
-    - email
+
 
 # /api/files
 
@@ -27,3 +24,9 @@
 - dm
 - delete own messages
 - update own messages
+
+# /api/settings
+- delete user
+- update user data
+    - password
+    - email
