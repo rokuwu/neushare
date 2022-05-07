@@ -69,22 +69,18 @@ const registerUser = asyncHandler(async (req, res) => {
     const updatedUser = await User.findByIdAndUpdate(user._id, { token }, {
         new: true
     });
-
-    res.json({
-        temp: updatedUser
-    });
     
-    /*
     // check if operation was successful
-    if(user) {
+    if(updatedUser) {
         res.status(200).json({
             function: 'registerUser',
-            user            
+            user: updatedUser,
+            invite: updatedInvite
         });
     } else {
         res.status(400);
         throw new Error('invalid user data');
-    }   */ 
+    } 
 });
 
 const loginUser = asyncHandler(async (req, res) => {

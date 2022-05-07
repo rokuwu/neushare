@@ -1,9 +1,8 @@
 const express = require('express');
 const invitesRouter = express.Router();
-const { createInvite, getInvites, deleteInvite, genInvite } = require('../controllers/invitesController');
+const { createInvite, getInvites } = require('../controllers/invitesController');
 
 invitesRouter.get('/', getInvites);
-invitesRouter.get('/create', createInvite);
-invitesRouter.delete('/delete/:id', deleteInvite);
+invitesRouter.post('/create', createInvite);
 
 module.exports = invitesRouter;

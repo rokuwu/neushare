@@ -16,14 +16,11 @@ const createInvite = asyncHandler(async (req, res) => {
 });
 
 const getInvites = asyncHandler(async (req, res) => {
+    const invites = await Invite.find();
+    
     res.status(200).json({
-        function: 'getInvites'
-    });
-});
-
-const deleteInvite = asyncHandler(async (req, res) => {
-    res.status(200).json({
-        function: 'deleteInvite'
+        function: 'getInvites',
+        invites
     });
 });
 
@@ -37,5 +34,5 @@ const genInvite = async () => {
 }
 
 module.exports = {
-    createInvite, getInvites, deleteInvite, genInvite
+    createInvite, getInvites
 }
