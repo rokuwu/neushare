@@ -5,13 +5,22 @@ const Invite = require('../models/inviteModel');
 const asyncHandler = require('express-async-handler');
 
 const registerUser = asyncHandler(async (req, res) => {
-    const { username, email, password } = req.body;
+    const { username, email, password, invite } = req.body;
     
     // check for missing information
-    if(!username || !email || !password) {
-        res.status(400)
-
+    if(!username || !email || !password || !invite) {
+        res.status(400);
+        
         throw new Error('missing information');
+    }
+
+    // check for valid invite
+    const inviteCheck = await Invite.findOne({ invite });
+
+    if(inviteCheck.used === true){
+        res.status(400);
+    
+        throw new Error('already used invite');
     }
 
     // check if user already exists
@@ -43,9 +52,20 @@ const registerUser = asyncHandler(async (req, res) => {
         admin: false        
     });
     
+    // mark invite as used
+    const updatedInvite = await Invite.findOneAndUpdate(
+        { invite },
+        {
+            used: true,
+            user: user._id
+        },
+        { new: true }
+    );
+
     const token = await genToken(user._id);
     //console.log(token);
 
+    // add token to user
     const updatedUser = await User.findByIdAndUpdate(user._id, { token }, {
         new: true
     });
