@@ -13,6 +13,7 @@ server.use(express.json());
 server.use(express.urlencoded({ extended: false }));
 server.use('/api/users', require('./routes/usersRouter'));
 server.use('/api/files', require('./routes/filesRouter'));
+server.use('/api/invites', require('./routes/invitesRouter'));
 server.use(errorHandler);
 
 server.listen(port, () => {

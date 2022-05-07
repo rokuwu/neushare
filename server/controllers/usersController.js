@@ -39,19 +39,31 @@ const registerUser = asyncHandler(async (req, res) => {
         username,
         email,
         password: hashedPassword,
-        admin: false
+        admin: false        
     });
     
-    // check if operatin was successful
+    const token = await genToken(user._id);
+    //console.log(token);
+
+    const updatedUser = await User.findByIdAndUpdate(user._id, { token }, {
+        new: true
+    });
+
+    res.json({
+        temp: updatedUser
+    });
+    
+    /*
+    // check if operation was successful
     if(user) {
         res.status(200).json({
             function: 'registerUser',
-            user
+            user            
         });
     } else {
         res.status(400);
         throw new Error('invalid user data');
-    }    
+    }   */ 
 });
 
 const loginUser = asyncHandler(async (req, res) => {
@@ -65,6 +77,11 @@ const getMe = asyncHandler(async (req, res) => {
         function: 'getMe'
     });
 });
+
+// generate jwt
+const genToken = (id) => {
+    return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: '31d' });
+}
 
 module.exports = {
     registerUser, loginUser, getMe
