@@ -1,11 +1,12 @@
 const express = require('express');
 const filesRouter = express.Router();
 const { uploadFile, deleteFile, updateFile, deleteAllFiles, getFiles } = require('../controllers/filesController');
+const { protect } = require('../middleware/protectRoutes');
 
-filesRouter.post('/upload', uploadFile);
-filesRouter.put('/update/:id', updateFile);
-filesRouter.delete('/delete/:id', deleteFile);
-filesRouter.delete('/delete', deleteAllFiles);
-filesRouter.get('/', getFiles);
+filesRouter.post('/upload', protect, uploadFile);
+filesRouter.put('/update/:id', protect, updateFile);
+filesRouter.delete('/delete/:id', protect, deleteFile);
+filesRouter.delete('/delete', protect, deleteAllFiles);
+filesRouter.get('/', protect, getFiles);
 
 module.exports = filesRouter;

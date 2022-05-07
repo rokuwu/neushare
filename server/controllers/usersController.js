@@ -89,9 +89,21 @@ const loginUser = asyncHandler(async (req, res) => {
     });
 });
 
-const getMe = asyncHandler(async (req, res) => {
+const getUserInfo = asyncHandler(async (req, res) => {
     res.status(200).json({
         function: 'getMe'
+    });
+});
+
+const updateEmail = asyncHandler(async (req, res) => {
+    res.status(200).json({
+        function: 'updateEmail'
+    });
+});
+
+const updatePassword = asyncHandler(async (req, res) => {
+    res.status(200).json({
+        function: 'updatePassword'
     });
 });
 
@@ -101,5 +113,5 @@ const genToken = (id) => {
 }
 
 module.exports = {
-    registerUser, loginUser, getMe
+    registerUser, loginUser, getUserInfo, updateEmail, updatePassword
 }
