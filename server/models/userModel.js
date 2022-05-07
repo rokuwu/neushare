@@ -12,6 +12,11 @@ const userSchema = new mongoose.Schema({
     password: {
         type: 'string',
         required: [true, 'no password']
+    },
+    admin: {
+        type: 'boolean',
+        default: false,
+        required: [true, 'no admin status defined']
     }
 },
 { timestamps: true }
