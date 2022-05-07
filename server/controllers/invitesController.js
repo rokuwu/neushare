@@ -1,31 +1,41 @@
-const mongoose = require('mongoose');
-const jwt = require('jsonwebtoken');
-const bcrypt = require('bcrypt');
 const Invite = require('../models/inviteModel');
+const asyncHandler = require('express-async-handler');
+const crypto = require('crypto');
 
-const createInvite = (req, res) => {
-    res.status(200).json({
-        function: 'createInvite'
+const createInvite = asyncHandler(async (req, res) => {
+    const invite = await genInvite(); 
+    
+    Invite.create({
+        invite
     });
-}
 
-const getInvites = (req, res) => {
+    res.status(200).json({
+        function: 'createInvite',
+        invite
+    });
+});
+
+const getInvites = asyncHandler(async (req, res) => {
     res.status(200).json({
         function: 'getInvites'
     });
-}
+});
 
-const deleteInvite = (req, res) => {
+const deleteInvite = asyncHandler(async (req, res) => {
     res.status(200).json({
         function: 'deleteInvite'
     });
-}
+});
 
 // gen invite
-const genInvite = () => {
-     
+const genInvite = async () => {
+    const randomBytes = crypto.randomBytes(16);
+    const buffer = Buffer.from(randomBytes);
+    const invite = buffer.toString('base64');
+    
+    return invite;
 }
 
 module.exports = {
-    createInvite, getInvites, deleteInvite
+    createInvite, getInvites, deleteInvite, genInvite
 }
