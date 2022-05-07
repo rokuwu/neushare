@@ -1,5 +1,4 @@
 const Invite = require('../models/inviteModel');
-const User = require('../models/userModel');
 const asyncHandler = require('express-async-handler');
 const crypto = require('crypto');
 
@@ -45,6 +44,7 @@ const genInvite = asyncHandler(async () => {
 });
 
 // check if user is admin
+// to do: put function in  separate file?
 const isAdmin = (user) => {
     if(user.admin === true) {
         return true;
