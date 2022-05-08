@@ -1,6 +1,7 @@
 const Invite = require('../models/inviteModel');
 const asyncHandler = require('express-async-handler');
 const crypto = require('crypto');
+const { isAdmin } = require('./usersController');
 
 const createInvite = asyncHandler(async (req, res) => {
     if(isAdmin(req.user) == false) {
@@ -42,16 +43,6 @@ const genInvite = asyncHandler(async () => {
     
     return invite;
 });
-
-// check if user is admin
-// to do: put function in  separate file?
-const isAdmin = (user) => {
-    if(user.admin === true) {
-        return true;
-    } else {
-        return false;
-    }
-}
 
 module.exports = {
     createInvite, getInvites

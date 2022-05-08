@@ -111,22 +111,95 @@ const loginUser = asyncHandler(async (req, res) => {
     }    
 });
 
-// to do: the rest of the functions
 const getUserInfo = asyncHandler(async (req, res) => {
+    const user = await User.findOne({ username: req.params.username }).select('-password');
+    
+    // check if user exists
+    if(!user) {
+        res.status(400);
+        throw new Error('user does not exist');
+    }
+
     res.status(200).json({
-        function: 'getMe'
+        function: 'getMe',
+        user
     });
 });
 
 const updateEmail = asyncHandler(async (req, res) => {
+    const user = await User.findById(req.user._id);
+    const id = user.id;
+    const { email, password } = req.body;
+    
+    // checking credentials
+    if(req.params.username !== user.username){
+        res.status(401);
+        throw new Error('not authorized');
+    }
+
+    if(!email || !password) {
+        res.status(400);
+        throw new Error('missing information');
+    }    
+
+    let updatedUser;
+
+    if(await bcrypt.compare(password, user.password)) {
+        updatedUser = await User.findByIdAndUpdate(
+            id,
+            { email },
+            { new: true }
+        );
+    }
+
+    if(!updatedUser) {
+        res.status(400);
+        throw new Error('invalid user data');
+    }
+    
     res.status(200).json({
-        function: 'updateEmail'
+        function: 'updateEmail',
+        user: updatedUser
     });
 });
 
 const updatePassword = asyncHandler(async (req, res) => {
+    const user = await User.findById(req.user._id);
+    const id = user.id;
+    const { password, newPassword } = req.body;
+    
+    // checking credentials
+    if(req.params.username !== user.username){
+        res.status(401);
+        throw new Error('not authorized');
+    }
+
+    if(!password || !newPassword) {
+        res.status(400);
+        throw new Error('missing information');
+    }
+
+    let updatedUser;
+
+    if(await bcrypt.compare(password, user.password)) {
+        const salt = await bcrypt.genSalt(13);
+        const newHashedPassword = await bcrypt.hash(newPassword, salt);
+        
+        updatedUser = await User.findByIdAndUpdate(
+            id,
+            { password: newHashedPassword },
+            { new: true }
+        );
+    }
+
+    if(!updatedUser) {
+        res.status(400);
+        throw new Error('invalid user data');
+    }
+    
     res.status(200).json({
-        function: 'updatePassword'
+        function: 'updatePassword',
+        user: updatedUser
     });
 });
 
@@ -135,6 +208,15 @@ const genToken = (id) => {
     return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: '31d' });
 }
 
+// check if user is admin
+const isAdmin = (user) => {
+    if(user.admin === true) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
 module.exports = {
-    registerUser, loginUser, getUserInfo, updateEmail, updatePassword
+    registerUser, loginUser, getUserInfo, updateEmail, updatePassword, isAdmin
 }
