@@ -7,6 +7,7 @@ const asyncHandler = require('express-async-handler');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
+const { isAdmin } = require('./usersController');
 
 // to do: file type filter, file size limits
 const uploadFile = asyncHandler(async (req, res) => {
@@ -108,6 +109,27 @@ const getFiles = asyncHandler(async (req, res) => {
     });
 });
 
+const getAllFiles = asyncHandler(async (req, res) => {
+    const user = req.user;
+
+    if(!isAdmin(user)){
+        res.status(401);
+        throw new Error('not authorized');
+    }
+
+    const files = await File.find();
+
+    if(!files || files.length === 0) {
+        res.status(400);
+        throw new Error('files do not exist');
+    }
+    
+    res.status(200).json({
+        function: 'getFiles',
+        files
+    });
+});
+
 // multer storage
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
@@ -122,5 +144,5 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 
 module.exports = {
-    uploadFile, deleteFile, updateFile, deleteAllFiles, getFiles, upload
+    uploadFile, deleteFile, updateFile, deleteAllFiles, getFiles, getAllFiles, upload
 }

@@ -112,7 +112,7 @@ const loginUser = asyncHandler(async (req, res) => {
 });
 
 const getUserInfo = asyncHandler(async (req, res) => {
-    const user = await User.findOne({ username: req.params.username }).select('-password');
+    const user = await User.findById(req.params.id).select('-password');
     
     // check if user exists
     if(!user) {
@@ -121,22 +121,16 @@ const getUserInfo = asyncHandler(async (req, res) => {
     }
 
     res.status(200).json({
-        function: 'getMe',
+        function: 'getUserInfo',
         user
     });
 });
 
 const updateEmail = asyncHandler(async (req, res) => {
-    const user = await User.findById(req.user._id);
+    const user = await User.findById(req.user.id);
     const id = user.id;
     const { email, password } = req.body;
     
-    // checking credentials
-    if(req.params.username !== user.username){
-        res.status(401);
-        throw new Error('not authorized');
-    }
-
     if(!email || !password) {
         res.status(400);
         throw new Error('missing information');
@@ -167,12 +161,6 @@ const updatePassword = asyncHandler(async (req, res) => {
     const user = await User.findById(req.user._id);
     const id = user.id;
     const { password, newPassword } = req.body;
-    
-    // checking credentials
-    if(req.params.username !== user.username){
-        res.status(401);
-        throw new Error('not authorized');
-    }
 
     if(!password || !newPassword) {
         res.status(400);

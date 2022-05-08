@@ -5,8 +5,8 @@ const { protect } = require('../middleware/protectRoutes');
 
 usersRouter.post('/register', registerUser);
 usersRouter.post('/login', loginUser);
-usersRouter.get('/profile/:username', protect, getUserInfo);
-usersRouter.put('/profile/:username/password', protect, updatePassword);
-usersRouter.put('/profile/:username/email', protect, updateEmail);
+usersRouter.get('/:id', protect, getUserInfo);
+usersRouter.put('/updatePassword', protect, updatePassword);
+usersRouter.put('/updateEmail', protect, updateEmail);
 
 module.exports = usersRouter;
