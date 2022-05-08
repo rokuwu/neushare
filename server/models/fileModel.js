@@ -2,16 +2,16 @@ const mongoose = require('mongoose');
 
 const fileSchema = new mongoose.Schema({
     user: {
-        type: mongoose.Schema.Types.ObjectId,
+        type: 'string',
         required: [true, 'no user'] 
     },
     type: {
         type: 'string',
         required: [true, 'no type']
     },
-    url: {
+    path: {
         type: 'string',
-        required: [true, 'no url']
+        required: [true, 'no path']
     }
 },
 { timestamps: true }

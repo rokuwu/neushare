@@ -2,15 +2,30 @@ const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const File = require('../models/fileModel');
+const User = require('../models/userModel');
 const asyncHandler = require('express-async-handler');
 const multer = require('multer');
 const path = require('path');
 
-const uploadFile = asyncHandler(async (req, res) => {    
-    console.log(req.file);
+const uploadFile = asyncHandler(async (req, res) => {
+    const user = req.user;
+    const path = `uploads/${req.file.filename}`;
+    const type = req.file.mimetype;
+
+    const file = await File.create({
+        user: user.id,
+        type,
+        path
+    });
+
+    if(!file){
+        res.status(400);
+        throw new Error('invalid file data');
+    }
 
     res.status(200).json({
-        function: 'uploadFile'
+        function: 'uploadFile',
+        file
     });
 });
 
@@ -40,8 +55,9 @@ const getFiles = asyncHandler(async (req, res) => {
 
 // multer storage
 const storage = multer.diskStorage({
-    destination: (req, file, cb) => {    
-        const uploadPath = path.join(__dirname + '/../uploads');    
+    destination: (req, file, cb) => {
+        const dir = '/../uploads';
+        const uploadPath = path.join(__dirname, dir);
         cb(null, uploadPath);
     },
     filename: (req, file, cb) => {
