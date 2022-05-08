@@ -6,16 +6,20 @@ const User = require('../models/userModel');
 const asyncHandler = require('express-async-handler');
 const multer = require('multer');
 const path = require('path');
+const fs = require('fs');
 
+// to do: file type filter, file size limits
 const uploadFile = asyncHandler(async (req, res) => {
     const user = req.user;
     const path = `uploads/${req.file.filename}`;
+    const fullPath = req.file.path;
     const type = req.file.mimetype;
 
     const file = await File.create({
         user: user.id,
         type,
-        path
+        path,
+        fullPath
     });
 
     if(!file){
@@ -30,26 +34,77 @@ const uploadFile = asyncHandler(async (req, res) => {
 });
 
 const deleteFile = asyncHandler(async (req, res) => {
+    const fileId = req.params.id;
+    const user = req.user;
+
+    // checking credentials
+    if(!fileId) {
+        res.status(400);
+        throw new Error('missing information');
+    }
+
+    const file = await File.findById(fileId);
+
+    if(!file) {
+        res.status(400);
+        throw new Error('file does not exist');
+    }
+
+    if(user.id !== file.user) {
+        res.status(401);
+        throw new Error('not authorized');
+    }
+
+    // delete file and remove document from db
+    await fs.unlink(file.fullPath, () => {});
+    await File.deleteOne({ id: fileId });
+    
     res.status(200).json({
-        function: 'deleteFile'
+        function: 'deleteFile',
+        deletedFile: file
     });
 });
 
 const updateFile = asyncHandler(async (req, res) => {
+    // to do
+
     res.status(200).json({
         function: 'updateFile'
     });
 });
 
 const deleteAllFiles = asyncHandler(async (req, res) => {
+    const user = req.user;
+    const files = await File.find({ user: user.id });
+
+    if(!files || files.length === 0) {
+        res.status(400);
+        throw new Error('files do not exist');
+    }
+    
+    // delete files and remove documents from db
+    files.forEach((f) => {
+        fs.unlink(f.fullPath, () => {});
+    });
+    await File.deleteMany({ user: user.id });
+    
     res.status(200).json({
         function: 'deleteAllFiles'
     });
 });
 
 const getFiles = asyncHandler(async (req, res) => {
+    const user = req.user;
+    const files = await File.find({ user: user.id });
+
+    if(!files || files.length === 0) {
+        res.status(400);
+        throw new Error('files do not exist');
+    }
+    
     res.status(200).json({
-        function: 'getFiles'
+        function: 'getFiles',
+        files
     });
 });
 

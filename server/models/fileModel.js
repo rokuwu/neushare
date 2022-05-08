@@ -12,6 +12,10 @@ const fileSchema = new mongoose.Schema({
     path: {
         type: 'string',
         required: [true, 'no path']
+    },
+    fullPath: {
+        type: 'string',
+        required: [true, 'no full path']
     }
 },
 { timestamps: true }
