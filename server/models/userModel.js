@@ -17,10 +17,6 @@ const userSchema = new mongoose.Schema({
         type: 'boolean',
         default: false,
         required: [true, 'no admin status defined']
-    },
-    token: {
-        type: 'string',
-        default: null
     }
 },
 { timestamps: true }

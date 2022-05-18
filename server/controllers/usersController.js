@@ -59,19 +59,14 @@ const registerUser = asyncHandler(async (req, res) => {
     );
 
     const token = await genToken(user._id);
-    //console.log(token);
-
-    // add token to user
-    const updatedUser = await User.findByIdAndUpdate(user._id, { token }, {
-        new: true
-    });
     
     // check if operation was successful
-    if(updatedUser) {
+    if(user) {
         res.status(200).json({
             function: 'registerUser',
-            user: updatedUser,
-            invite: updatedInvite
+            user,
+            invite: updatedInvite,
+            token
         });
     } else {
         res.status(400);
@@ -94,16 +89,11 @@ const loginUser = asyncHandler(async (req, res) => {
     if(user && await bcrypt.compare(password, user.password)) {
         // generate new token with every login to prevent it from expiring
         const token = await genToken(user._id);
-
-        const updatedUser = await User.findByIdAndUpdate(
-            user._id,
-            { token },
-            { new: true }
-        );
         
         res.status(200).json({
             function: 'loginUser',
-            user: updatedUser
+            user,
+            token
         });
     } else {
         res.status(400);
@@ -112,7 +102,7 @@ const loginUser = asyncHandler(async (req, res) => {
 });
 
 const getUserInfo = asyncHandler(async (req, res) => {
-    const user = await User.findById(req.params.id).select('-password');
+    const user = req.user;
     
     // check if user exists
     if(!user) {
@@ -127,7 +117,7 @@ const getUserInfo = asyncHandler(async (req, res) => {
 });
 
 const updateEmail = asyncHandler(async (req, res) => {
-    const user = await User.findById(req.user.id);
+    const user = req.user;
     const id = user.id;
     const { email, password } = req.body;
     
@@ -158,7 +148,7 @@ const updateEmail = asyncHandler(async (req, res) => {
 });
 
 const updatePassword = asyncHandler(async (req, res) => {
-    const user = await User.findById(req.user._id);
+    const user = req.user;
     const id = user.id;
     const { password, newPassword } = req.body;
 

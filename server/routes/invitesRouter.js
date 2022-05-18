@@ -3,7 +3,7 @@ const invitesRouter = express.Router();
 const { createInvite, getInvites } = require('../controllers/invitesController');
 const { protect } = require('../middleware/protectRoutes');
 
-invitesRouter.get('/', protect, getInvites);
+invitesRouter.get('/get', protect, getInvites);
 invitesRouter.post('/create', protect, createInvite);
 
 module.exports = invitesRouter;

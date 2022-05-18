@@ -125,7 +125,7 @@ const getAllFiles = asyncHandler(async (req, res) => {
     }
     
     res.status(200).json({
-        function: 'getFiles',
+        function: 'getAllFiles',
         files
     });
 });
